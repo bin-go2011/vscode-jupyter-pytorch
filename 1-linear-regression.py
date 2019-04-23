@@ -54,5 +54,37 @@ for epoch in range(10):
     print("my progress:", epoch, l.data[0])
 print("my prediction after training", forward(4).data[0])
 
+#%%
+import torch
+import torch.nn as nn
+from torch.autograd import Variable
 
+x_data = Variable(torch.Tensor([[1.0], [2.0], [3.0]]))
+y_data = Variable(torch.Tensor([[2.0], [4.0], [6.0]]))
 
+class LinearModel(nn.Module):
+    def __init__(self, in_dim, out_dim):
+        super(LinearModel, self).__init__()
+        self.linear = nn.Linear(in_dim, out_dim)
+    
+    def forward(self, x):
+        out = self.linear(x)
+        return out
+
+model = LinearModel(1,1)
+
+criterion = torch.nn.MSELoss()
+optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
+
+for epoch in range(1000):
+    y_pred = model(x_data)
+
+    loss = criterion(y_pred, y_data)
+    print(epoch, loss.data)
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+output = Variable(torch.Tensor([4.0]))
+y_pred = model(output)
+print("my prediction after training", 4, model(output).data[0])
